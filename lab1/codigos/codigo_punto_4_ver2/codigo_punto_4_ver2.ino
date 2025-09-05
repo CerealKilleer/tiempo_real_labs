@@ -7,7 +7,7 @@ volatile uint8_t count_edges;
 volatile uint8_t count_high;
 
 
-ISR(INT0_vect, ISR_NAKED)
+ISR(INT0_vect)
 {
     uint8_t sampled_pin = PIN_REG;
     if (count_edges >= MAX_COUNT) return;
