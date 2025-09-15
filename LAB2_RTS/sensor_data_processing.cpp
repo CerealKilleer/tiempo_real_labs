@@ -37,6 +37,7 @@ int main() {
     srand(time(0));
 
     std::vector<double> averages;
+
     /*
      * Esta sección del código es el programa principal. Aquí estarán las fugas de memoria o se llamarán a la función con error de desbordamiento,
      * es fundamental definir la instrumentación a partir de aquí para poder tener la observación global del programa.
@@ -50,7 +51,6 @@ int main() {
 
         usleep(1000);  // 1ms
     }
-
 
     std::cout << "Processed data from " << NUM_SENSORS << " sensors.\n";
     return 0;
