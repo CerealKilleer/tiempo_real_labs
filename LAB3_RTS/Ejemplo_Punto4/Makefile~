@@ -1,0 +1,9 @@
+HOSTCXX = g++
+TARGETCXX = aarch64-linux-gnu-g++
+CXXFLAGS = -Wall -Werror -Wpedanctic -std=c++17 -O0
+HOSTBINARY = prod_cons_lambda_solv_CPP17_v2_x86
+TARGETBINARY = prod_cons_lambda_solv_CPP17_v2_aarch64
+
+$(HOSTBINARY): %.cpp
+	mkdir -p ./build
+	$(HOSTCXX) $(CXXFLAGS) -o $< $@  
