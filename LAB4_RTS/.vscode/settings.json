@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "time.h": "c",
+        "thread": "c",
+        "synchronization_communication.h": "c"
+    }
+}
