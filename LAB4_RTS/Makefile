@@ -1,7 +1,7 @@
 CC = gcc
 AR = ar
 CFLAGS = -O1 -Wall -Werror -Wpedantic -I${INCLUDE_DIR}
-LDFLAGS = -lpthread -lrt -L${BUILD_DIR} -lcar_control
+LDFLAGS = -lpthread -lrt -lm -L${BUILD_DIR} -lcar_control
 INCLUDE_DIR = ./include
 SOURCE_DIR = ./src
 BUILD_DIR = ./build
@@ -9,6 +9,7 @@ LIBABS_BREAKS_OBJ = ${BUILD_DIR}/libabs_breaks.o
 LIBSENSE_VELOCITY_OBJ = ${BUILD_DIR}/libsense_velocity.o
 LIBREPEATING_TIMERS_CLOCKS_OBJ = ${BUILD_DIR}/librepeating_timers_clocks.o
 LIBFUEL_INJECTION_OBJ = ${BUILD_DIR}/libfuel_injection.o
+LIBGPS_OBJ = ${BUILD_DIR}/libgps.o
 APP_OBJ = ${BUILD_DIR}/app.o
 MAIN_OBJ = ${BUILD_DIR}/main.o
 LIBCAR_CONTROL =  ${BUILD_DIR}/libcar_control.a
@@ -41,7 +42,15 @@ ${LIBFUEL_INJECTION_OBJ}: ${SOURCE_DIR}/libfuel_injection.c
 	mkdir -p ${BUILD_DIR}
 	${CC} ${CFLAGS} $^ -c -o $@
 
-${LIBCAR_CONTROL}: ${LIBSENSE_VELOCITY_OBJ} ${LIBABS_BREAKS_OBJ} ${LIBREPEATING_TIMERS_CLOCKS_OBJ} ${LIBFUEL_INJECTION_OBJ}
+${LIBGPS_OBJ}: ${SOURCE_DIR}/libgps.c
+	mkdir -p ${BUILD_DIR}
+	${CC} ${CFLAGS} $^ -c -o $@
+
+${LIBCAR_CONTROL}: ${LIBSENSE_VELOCITY_OBJ} \
+					${LIBABS_BREAKS_OBJ} \
+					${LIBREPEATING_TIMERS_CLOCKS_OBJ} \
+					${LIBFUEL_INJECTION_OBJ} \
+					${LIBGPS_OBJ}
 	mkdir -p ${BUILD_DIR}
 	${AR} rcs $@ $^
 

@@ -3,6 +3,7 @@
         "stdlib.h": "c",
         "time.h": "c",
         "thread": "c",
-        "synchronization_communication.h": "c"
+        "synchronization_communication.h": "c",
+        "libgps.h": "c"
     }
 }
