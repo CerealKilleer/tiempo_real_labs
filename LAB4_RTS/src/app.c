@@ -2,7 +2,10 @@
 #include <sys/time.h>
 #include <time.h>
 #include "app.h"
+#include "libsense_vel.h"
+#include "libABS_breaks.h"
 #include "librepeating_timers_clocks.h"
+#include "libfuel_injection.h"
 #include "synchronization_communication.h"
 
 #define MAX_THREADS 4
@@ -14,6 +17,8 @@
 #define PERIOD_SPEED_SENSOR_MS 20
 #define OFFSET_ABS_CONTROL_MS 5000
 #define PERIOD_ABS_CONTROL_MS 40
+#define OFFSET_FUEL_INJECTION_MS 1000
+#define PERIOD_FUEL_INJECTION_US 12500
 
 #define TIMESPEC_DIFF_NS(start, stop) ((stop.tv_nsec) + SEC_TO_NS(stop.tv_sec)) - ((start.tv_nsec) + SEC_TO_NS(start.tv_sec))
 #define TIMESPEC_DIFF_MS(start, stop) NS_TO_MS((float)(TIMESPEC_DIFF_NS(start, stop)))
@@ -28,6 +33,33 @@ struct speed_data data = {
         .abs_ready = true,
         .speed_sensor_ready = false
 };
+
+void *fuel_injection(void *args)
+{
+        int32_t siginfo = SIGRTMIN;
+        struct periodic_signal *p = create_periodic_signal(MS_TO_US(OFFSET_FUEL_INJECTION_MS), 
+                                                        PERIOD_FUEL_INJECTION_US, siginfo);
+        struct timespec start, stop;
+        float diff;
+
+        if (p == NULL) {
+                PRINT_DATA(stderr, "[fuel_injection thread]: No se pudo crear la tarea periodica\n");
+                return NULL; 
+        }
+
+        PRINT_DATA_ARGS(stdout, "******* En %d s inicia la inyección de combustible *******\n", SECS_PER_MS(OFFSET_FUEL_INJECTION_MS));
+
+        while (1) {
+                clock_gettime(CLOCK_REALTIME, &start);
+                wait_periodic_signal(p);
+                injection();
+                clock_gettime(CLOCK_REALTIME, &stop);
+                
+                diff = TIMESPEC_DIFF_MS(start, stop);
+
+                PRINT_DATA_ARGS(stdout, "[fuel_injection thread] desde la última ejecución: %.3f ms\n", diff);
+        }
+}
 
 void *abs_control(void *args)
 {
@@ -85,10 +117,18 @@ void *speed_sensor(void *args)
 int init_app(void)
 {
         pthread_t threads[MAX_THREADS];
+        sigset_t alarm_sigset;
         pthread_mutex_init(&data_mutex, NULL);
         pthread_mutex_init(&stdout_mutex, NULL);
         pthread_cond_init(&abs_cond, NULL);
         pthread_cond_init(&speed_sensor_cond, NULL);
+
+        sigemptyset(&alarm_sigset);
+	for (uint8_t i = SIGRTMIN; i <= SIGRTMIN + 1; i++) {
+                sigaddset(&alarm_sigset, i);
+        }
+		
+	sigprocmask(SIG_BLOCK, &alarm_sigset, NULL);
 
         if (pthread_create(&threads[0], NULL, speed_sensor, "Speed Sensor") != 0) {
                 PRINT_DATA(stderr, "[init_app]: no pudo crearse el hilo Speed Sensor\n");
@@ -100,6 +140,10 @@ int init_app(void)
                 return 1;
         }
 
+        if (pthread_create(&threads[2], NULL, fuel_injection, "Fuel Injection") != 0) {
+                PRINT_DATA(stderr, "[init_app]: no pudo crearse el hilo Fuel Injection\n");
+                return 1;
+        }
         for (uint8_t i=0; i < MAX_THREADS; i++) {
                 pthread_join(threads[i], NULL);
         }

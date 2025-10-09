@@ -8,6 +8,7 @@ BUILD_DIR = ./build
 LIBABS_BREAKS_OBJ = ${BUILD_DIR}/libabs_breaks.o
 LIBSENSE_VELOCITY_OBJ = ${BUILD_DIR}/libsense_velocity.o
 LIBREPEATING_TIMERS_CLOCKS_OBJ = ${BUILD_DIR}/librepeating_timers_clocks.o
+LIBFUEL_INJECTION_OBJ = ${BUILD_DIR}/libfuel_injection.o
 APP_OBJ = ${BUILD_DIR}/app.o
 MAIN_OBJ = ${BUILD_DIR}/main.o
 LIBCAR_CONTROL =  ${BUILD_DIR}/libcar_control.a
@@ -36,7 +37,11 @@ ${LIBREPEATING_TIMERS_CLOCKS_OBJ}: ${SOURCE_DIR}/librepeating_timers_clocks.c
 	mkdir -p ${BUILD_DIR}
 	${CC} ${CFLAGS} $^ -c -o $@
 
-${LIBCAR_CONTROL}: ${LIBSENSE_VELOCITY_OBJ} ${LIBABS_BREAKS_OBJ} ${LIBREPEATING_TIMERS_CLOCKS_OBJ}
+${LIBFUEL_INJECTION_OBJ}: ${SOURCE_DIR}/libfuel_injection.c
+	mkdir -p ${BUILD_DIR}
+	${CC} ${CFLAGS} $^ -c -o $@
+
+${LIBCAR_CONTROL}: ${LIBSENSE_VELOCITY_OBJ} ${LIBABS_BREAKS_OBJ} ${LIBREPEATING_TIMERS_CLOCKS_OBJ} ${LIBFUEL_INJECTION_OBJ}
 	mkdir -p ${BUILD_DIR}
 	${AR} rcs $@ $^
 
