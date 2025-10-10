@@ -12,8 +12,6 @@
         #define OFFSET_POSITION_SENSOR_MS 1000
         #define PERIOD_POSITION_SENSOR_MS 200
         
-        #define TIMESPEC_TO_MS(timespec) SECS_TO_MS(timespec.tv_sec) + 
-        #define TIMESPEC_DIFF_NS(start, stop) ((stop.tv_nsec) + SEC_TO_NS(stop.tv_sec)) - ((start.tv_nsec) + SEC_TO_NS(start.tv_sec))
-        #define TIMESPEC_DIFF_MS(start, stop) NS_TO_MS((float)(TIMESPEC_DIFF_NS(start, stop)))
+        #define TIMESPEC_TO_MS(timespec) (SECS_TO_MS((double)timespec.tv_sec) + NS_TO_MS((double)timespec.tv_nsec))
         int init_app(void);
 #endif

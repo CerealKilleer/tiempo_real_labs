@@ -50,23 +50,27 @@ void *position_sensor(void *args)
         //Se crea la señal periódica
         struct periodic_signal *p = create_periodic_signal(MS_TO_US(OFFSET_POSITION_SENSOR_MS), 
                                                         MS_TO_US(PERIOD_POSITION_SENSOR_MS), siginfo);
-        struct timespec start, stop; //Para medir el periodo
-        float diff;
+        double start, stop, diff; //Para medir el periodo en ms
+        struct timespec time;
+        
         //Se valida la creación de la señal periódica
         if (p == NULL) {
                 PRINT_DATA(stderr, "[position_sensor thread]: No se pudo crear la tarea periodica\n");
                 return NULL; 
         }
         //Los PRINT_DATA y los PRINT_DATA_ARGS son utilidades thread safe para escribir en la salida estándar
-        PRINT_DATA_ARGS(stdout, "******* En %d s inicia %s *******\n", 
-                       SECS_PER_MS(OFFSET_POSITION_SENSOR_MS), (char *)args);
+        PRINT_DATA_ARGS(stdout, "******* En %.2f s inicia %s *******\n", 
+                       MS_TO_S(OFFSET_POSITION_SENSOR_MS), (char *)args);
 
         //Cuerpo principal del hilo
+        clock_gettime(CLOCK_REALTIME, &time);
+        start = TIMESPEC_TO_MS(time);
         while (1) {
-                clock_gettime(CLOCK_REALTIME, &start);
                 wait_periodic_signal(p);
-                clock_gettime(CLOCK_REALTIME, &stop); //Aquí debe haber aproximadamente un periodo
-                diff = TIMESPEC_DIFF_MS(start, stop);
+                clock_gettime(CLOCK_REALTIME, &time); //Aquí debe haber aproximadamente un periodo
+                stop = TIMESPEC_TO_MS(time);
+                diff = stop - start;
+                start = stop;
                 show_position(MS_TO_S(diff)); //Se muestra la nueva posición del auto
                 
                 PRINT_DATA_ARGS(stdout, "[position_sensor] desde la última ejecución: %.3f ms\n", diff);
@@ -82,11 +86,12 @@ void *fuel_injection(void *args)
 {
         //Esta primera tarea usará la señal número SIGRTMIN (34) en la maquina donde se desarrlló
         int32_t siginfo = SIGRTMIN;
+        //Se crea la señal periódica
         struct periodic_signal *p = create_periodic_signal(MS_TO_US(OFFSET_FUEL_INJECTION_MS), 
                                                         PERIOD_FUEL_INJECTION_US, siginfo);
-        //Se creó la señal periódica
-        struct timespec start, stop; //Para saber el periodo de ejecución del job
-        float diff;
+        //Para saber el periodo de ejecución del job
+        double start, stop;
+        struct timespec time; 
 
         //Validar la creación del periodic signal
         if (p == NULL) {
@@ -94,18 +99,19 @@ void *fuel_injection(void *args)
                 return NULL; 
         }
 
-        PRINT_DATA_ARGS(stdout, "******* En %d s inicia %s *******\n", 
-                         SECS_PER_MS(OFFSET_FUEL_INJECTION_MS),  (char *)args);
-        
-        while (1) {
-                clock_gettime(CLOCK_REALTIME, &start); //Inicia la medición del tiempo
-                wait_periodic_signal(p); //Se espera a que el timer active la señal
-                clock_gettime(CLOCK_REALTIME, &stop); //Finaliza la medición del tiempo
-                injection(); //En este punto debe haber pasado más o menos un periodo o un offset si es el inicio
-        
-                diff = TIMESPEC_DIFF_MS(start, stop); //Debe imprimir un valor muy cercano al periodo o al offset
+        PRINT_DATA_ARGS(stdout, "******* En %.2f s inicia %s *******\n", 
+                         MS_TO_S(OFFSET_FUEL_INJECTION_MS),  (char *)args);
 
-                PRINT_DATA_ARGS(stdout, "[fuel_injection thread] desde la última ejecución: %.3f ms\n", diff);
+        clock_gettime(CLOCK_REALTIME, &time); //Inicia la medición del tiempo
+        start = TIMESPEC_TO_MS(time);
+        while (1) {
+                wait_periodic_signal(p); //Se espera a que el timer active la señal
+                clock_gettime(CLOCK_REALTIME, &time); //Finaliza la medición del tiempo
+                stop = TIMESPEC_TO_MS(time);
+                injection(); //En este punto debe haber pasado más o menos un periodo o un offset si es el inicio
+
+                PRINT_DATA_ARGS(stdout, "[fuel_injection thread] desde la última ejecución: %.3f ms\n", stop - start);
+                start = stop;
         }
 }
 
@@ -119,26 +125,27 @@ void *abs_control(void *args)
         //Se crea la estructura
         struct periodic_task *p = create_periodic_task(MS_TO_US(OFFSET_ABS_CONTROL_MS), 
                                                         MS_TO_US(PERIOD_ABS_CONTROL_MS));
-        struct timespec start, stop; //Contar el tiempo entre ejecuciones del job
-        float diff;
+        //Medir el periodo entre ejecuciones del job
+        double start, stop; 
+        struct timespec time;
         //Validar la creacion del periodic_task
         if (p == NULL) {
                 PRINT_DATA(stderr, "[abs_control thread]: No se pudo crear la tarea periodica\n");
                 return NULL; 
         }
         //Imprime información de manera thread safe
-        PRINT_DATA_ARGS(stdout, "******* En %d s inicia %s *******\n", 
-                        SECS_PER_MS(OFFSET_ABS_CONTROL_MS),  (char *)args);
+        PRINT_DATA_ARGS(stdout, "******* En %.2f s inicia %s *******\n", 
+                        MS_TO_S(OFFSET_ABS_CONTROL_MS),  (char *)args);
         //Cuerpo principal del thread
+        start = TIMESPEC_TO_MS(time); //Marca de tiempo inicial
         while (1) {
-                clock_gettime(CLOCK_REALTIME, &start); //Cuando inicia la espera para el job
                 wait_clock(p);
-                clock_gettime(CLOCK_REALTIME, &stop); //Cuando el job está listo
+                clock_gettime(CLOCK_REALTIME, &time); //Cuando el job está listo
+                stop = TIMESPEC_TO_MS(time); //Aqui debe haber aproximadamente un periodo
                 control_abs_breaks();
-                
-                diff = TIMESPEC_DIFF_MS(start, stop); //Esto debe ser aproximadamente igual al periodo o al offset
 
-                PRINT_DATA_ARGS(stdout, "[abs_control thread] desde la última ejecución: %.3f ms\n", diff);
+                PRINT_DATA_ARGS(stdout, "[abs_control thread] desde la última ejecución: %.3f ms\n", stop - start);
+                start = stop;
         }
 }
 
@@ -153,8 +160,8 @@ void *speed_sensor(void *args)
         //Crea el periodic_task del sensor de velocidad con un offset de 1s y un periodo de 20ms
         struct periodic_task *p = create_periodic_task(MS_TO_US(OFFSET_SPEED_SENSOR_MS), 
                                                         MS_TO_US(PERIOD_SPEED_SENSOR_MS));
-        struct timespec start, stop; //Calcular el periodo entre ejecuciones del job
-        float diff; //El periodo en ms
+        double start, stop; //Calcular el periodo entre ejecuciones del job
+        struct timespec time; //El periodo en ms
 
         //Se valida que se haya podido crear el periodic_task, en caso contrario el hilo termina
         if (p == NULL) {
@@ -164,18 +171,19 @@ void *speed_sensor(void *args)
         }
 
         //Mensaje de inicio, notese el uso del macro variadico
-        PRINT_DATA_ARGS(stdout, "******* En %d s inicia %s *******\n", 
-                        SECS_PER_MS(OFFSET_SPEED_SENSOR_MS), (char *)args);
-       
+        PRINT_DATA_ARGS(stdout, "******* En %.2f s inicia %s *******\n", 
+                        MS_TO_S(OFFSET_SPEED_SENSOR_MS), (char *)args);
+
+        clock_gettime(CLOCK_REALTIME, &time);
+        start = TIMESPEC_TO_MS(time); //Marca de tiempo inicial
         while (1) {
-                //Se toma el tiempo antes de esperar suspender el hilo
-                clock_gettime(CLOCK_REALTIME, &start);
                 wait_clock(p); //Se suspende el hilo hasta que se cumpla el offset o el periodo
-                clock_gettime(CLOCK_REALTIME, &stop); //Se muestrea el instante de inicio del job
+                clock_gettime(CLOCK_REALTIME, &time); //Se muestrea el instante de inicio del job
+                stop = TIMESPEC_TO_MS(time);
                 sense_speed(); // Operaciones asociadas al job del sensado de velocidad
-                diff = TIMESPEC_DIFF_MS(start, stop); //Se toma la diferencia de tiempos
                 //Se muestra la diferencia, esta debe ser aproximadamente igual al offset o al periodo de ejecución
-                PRINT_DATA_ARGS(stdout, "[speed_sensor thread] desde la última ejecución: %.3f ms\n", diff);
+                PRINT_DATA_ARGS(stdout, "[speed_sensor thread] desde la última ejecución: %.3f ms\n", stop - start);
+                start = stop; //Se ajusta la nueva diferencia de tiempo
         }
 }
 
