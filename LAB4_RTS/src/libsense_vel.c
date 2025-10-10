@@ -36,13 +36,13 @@ float simulate_speed(float break_pressure)
 void sense_speed(void)
 {
         float speed;
-        
+        //Se toma el mutex
         pthread_mutex_lock(&data_mutex);
-
+        //Se valida que el controlador ABS haya puesto datos validos
         while (!data.abs_ready) {
-                pthread_cond_wait(&abs_cond, &data_mutex);
+                pthread_cond_wait(&abs_cond, &data_mutex); //En caso contrario se espera a la condicion
         }
-
+        //Se simulan las mediciones de velocidad en cada rueda
         data.speed_sensor_ready = false;
         data.avg_vehicle_speed = 0.0;
         for (uint8_t i = 0; i < WHEELS_NUM; i++) {
@@ -51,13 +51,14 @@ void sense_speed(void)
                 data.avg_vehicle_speed += speed;
                 PRINT_DATA_ARGS(stdout, "[sense_speed] rueda #%d: %.2f km/h\n", i+1, speed);
         }
-
+        //La velocidad promedio es la velocidad del auto
         data.avg_vehicle_speed /= WHEELS_NUM;
-
+        PRINT_DATA_ARGS(stdout, "[sense_speed] auto: %.2f km/h\n", data.avg_vehicle_speed);
+        //Si el auto se ha detenido se informa
         if (data.avg_vehicle_speed < 0.01) {
                 data.stoped = true;
         }
-
+        //Para notificar que hay una medicion valida
         data.speed_sensor_ready = true;
         pthread_cond_signal(&speed_sensor_cond);
         pthread_mutex_unlock(&data_mutex);

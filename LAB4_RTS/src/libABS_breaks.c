@@ -11,18 +11,22 @@
  */
 void control_abs_breaks(void)
 {
-        pthread_mutex_lock(&data_mutex);
-
-        while (!data.speed_sensor_ready) {
+        //Para hacer el control ABS hay que utilizar las medidas de velocidad que produce el speed_sensor
+        pthread_mutex_lock(&data_mutex); //Se trata de tomar el mutex
+        //Si se toma, es necesario saber si hay una última medida válida. Si no, hay que esperar a que se produzca una medición válida
+        while (!data.speed_sensor_ready) { 
                 pthread_cond_wait(&speed_sensor_cond, &data_mutex);
+                //Esta es la forma de usar variables condicionales
+                //Debe asegurarse que al despertar el hilo efectivamente se haya cumplido la condición
         }
-        data.abs_ready = false;
+        data.abs_ready = false; //Se pone esta bandera en false para indicar que no hay ningún valor válido producido por el control abs
 
+        //Si el auto está detenido no hay nada que controlar
         if (data.stoped) {
                 PRINT_DATA(stdout, "[control_abs_breaks]: Vehiculo detenido\n");
-                data.abs_ready = true;
-                pthread_cond_signal(&abs_cond);
-                pthread_mutex_unlock(&data_mutex);
+                data.abs_ready = true; //El control ABS está listo
+                pthread_cond_signal(&abs_cond); //Se despiertan los hilos que estén detenidos por la condición abs_cond
+                pthread_mutex_unlock(&data_mutex); //Se libera el mutex
                 return;
         }
         /*
@@ -42,7 +46,7 @@ void control_abs_breaks(void)
                         PRINT_DATA_ARGS(stdout, "[control_abs_breaks]: La rueda %d está en riesgo de bloquearse. Disminuyendo presión de frenado\n", i + 1);
                 }
         }
-        data.abs_ready = true;
-        pthread_cond_signal(&abs_cond);
-        pthread_mutex_unlock(&data_mutex);
+        data.abs_ready = true; //Si se actualizó el control ABS hay una nueva medición válida
+        pthread_cond_signal(&abs_cond); //Se despierta cualquier hilo que esté esperando una medición
+        pthread_mutex_unlock(&data_mutex); //Se libera el mutex
 }
