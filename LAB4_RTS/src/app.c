@@ -141,6 +141,7 @@ void *abs_control(void *args)
         PRINT_DATA_ARGS(stdout, "******* En %d s inicia %s *******\n", 
                         MS_TO_S(OFFSET_ABS_CONTROL_MS),  (char *)args);
         //Cuerpo principal del thread
+        clock_gettime(CLOCK_REALTIME, &time); //Tomar el primer tiempo
         start = TIMESPEC_TO_MS(time); //Marca de tiempo inicial
         while (1) {
                 wait_clock(p);
