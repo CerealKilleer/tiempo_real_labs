@@ -8,7 +8,7 @@
         #define OFFSET_ABS_CONTROL_MS 5000
         #define PERIOD_ABS_CONTROL_MS 40
         #define OFFSET_FUEL_INJECTION_MS 1000
-        #define PERIOD_FUEL_INJECTION_US 12500
+        #define PERIOD_FUEL_INJECTION_MS 80
         #define OFFSET_POSITION_SENSOR_MS 1000
         #define PERIOD_POSITION_SENSOR_MS 200
         

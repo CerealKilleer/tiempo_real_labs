@@ -31,7 +31,11 @@ float simulate_speed(float break_pressure)
 
 /**
  * @brief Implementa el sensor basico de velocidad. Lee el buffer de velocidades para cada rueda
- * y determina cuando el auto está detenido
+ * y determina cuando el auto está detenido. Calcula la nueva velocidad únicamente cuando el control ABS
+ * ha establecido valores validos en los frenos de cada rueda. Cuando esto no sucede, libera el mutex y 
+ * queda a la espera de una notificación por parte del control ABS a través de la variable condicional abs_cond.
+ * Al establecer una medicion valida de velocidad, actualiza una bandera y notifica a cualquier tarea 
+ * que pueda estar esperando una notificacion desde la variable condicional speed_sensor_cond
  */
 void sense_speed(void)
 {

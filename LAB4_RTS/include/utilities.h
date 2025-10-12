@@ -1,12 +1,12 @@
 #ifndef __UTILITIES_H__
 #define __UTILITIES_H__
         //Macros para el manejo de tiempo
-        #define NS_PER_MS  (1000000.0)
-        #define NS_PER_SEC (1000000000.0)
-        #define US_PER_MS  (1000.0)
-        #define US_PER_SEC (1000000.0)
-        #define MS_PER_SEC (1000.0)
-        #define NS_PER_US  (1000.0)
+        #define NS_PER_MS  (1000000)
+        #define NS_PER_SEC (1000000000)
+        #define US_PER_MS  (1000)
+        #define US_PER_SEC (1000000)
+        #define MS_PER_SEC (1000)
+        #define NS_PER_US  (1000)
 
         #define SEC_TO_NS(x) ((x) * NS_PER_SEC)
         #define NS_TO_SECS(x) ((x) / NS_PER_SEC)

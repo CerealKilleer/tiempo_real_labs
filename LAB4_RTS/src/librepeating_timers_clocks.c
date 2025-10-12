@@ -52,7 +52,7 @@ static void add_us(struct timespec *clock, uint64_t offset)
         //Primero se deben juntar los nanosegundos de la marca con el offset
         uint64_t actual_time_ns = clock->tv_nsec + US_TO_NS(offset);
         //Se adicional el nuevo tiempo. Se debe dividir entre la cantidad de segundos que se agregan
-        clock->tv_sec += SECS_PER_NS(actual_time_ns);
+        clock->tv_sec += NS_TO_SECS(actual_time_ns);
         //Y los nanosegundos restantes para la marca de tiempo.
         //Los nanosegundos nunca deben superar 999.999.999ns porque eso implicaría que hay uno o varios segundos adicionales
         clock->tv_nsec = REMAIN_NS_FROM_SECS(actual_time_ns);

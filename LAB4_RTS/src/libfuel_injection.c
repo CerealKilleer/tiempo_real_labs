@@ -12,7 +12,8 @@ struct injector_data injector_data = {
 /**
  * @brief Simula un sistema de inyección de combustible básico
  * Inyecta combustible si está disponible, si el combustible se termina levanta banderas
- * indicando que el auto se detenderá.
+ * indicando que el auto se detenderá. Depende de que hayan mediciones válidas de velocidad en el sistema
+ * para saber si inyectar o no combustible y para ello usa mutex y la variable condicional speed_sensor_cond.
  */
 void injection(void)
 {

@@ -6,7 +6,7 @@
  * Inyeccion de combustible: periodo 12.5 ms y offset de 1s
  * Sensor de posicion: periodo de 200ms y offset de 1s
  * Los primeros dos hilos usan relojes POSIX y los restantes señales POSIX.
- * Se simula un auto que va a aproximadamente 80km/h y a los 5 segundos cominza a frenar hasta detenerse
+ * Se simula un auto que va a aproximadamente 80km/h y a los 4 segundos comienza a frenar hasta detenerse
  */
 #include <stdio.h>
 #include <sys/time.h>
@@ -33,6 +33,10 @@ struct speed_data data = { //Se crea la struct de los datos del sensor de veloci
         .stoped = false, //El auto inicia en movimiento
         .abs_ready = true, //Se asume que el ABS está listo. Inicialmente no se pisan los frenos
         .speed_sensor_ready = false //El sensor de velocidad no ha hecho la primera medición.
+        /*El orden de las ultimas dos banderas es fundamental para evitar un interbloqueo entre el ABS y el sensor de velocidad
+        Se define que cuando inicia el programa el control ABS está listo porque aún no hay presión en los frenos
+        Por tanto, el sensor de velocidad no debe esperar a que el ABS actualice los valores.
+        */
 };
 
 /**
@@ -47,7 +51,7 @@ void *position_sensor(void *args)
 {
         //Este hilo usará la señal SIGRTMIN + 1 (35)
         int32_t siginfo = SIGRTMIN + 1;
-        //Se crea la señal periódica
+        //Crea la periodic_signal del sensor de posicion con un offset de 1s y un periodo de 200ms
         struct periodic_signal *p = create_periodic_signal(MS_TO_US(OFFSET_POSITION_SENSOR_MS), 
                                                         MS_TO_US(PERIOD_POSITION_SENSOR_MS), siginfo);
         double start, stop, diff; //Para medir el periodo en ms
@@ -59,7 +63,7 @@ void *position_sensor(void *args)
                 return NULL; 
         }
         //Los PRINT_DATA y los PRINT_DATA_ARGS son utilidades thread safe para escribir en la salida estándar
-        PRINT_DATA_ARGS(stdout, "******* En %.2f s inicia %s *******\n", 
+        PRINT_DATA_ARGS(stdout, "******* En %d s inicia %s *******\n", 
                        MS_TO_S(OFFSET_POSITION_SENSOR_MS), (char *)args);
 
         //Cuerpo principal del hilo
@@ -86,9 +90,9 @@ void *fuel_injection(void *args)
 {
         //Esta primera tarea usará la señal número SIGRTMIN (34) en la maquina donde se desarrlló
         int32_t siginfo = SIGRTMIN;
-        //Se crea la señal periódica
+        //Crea la periodic_signal del inyector de combustible con un offset de 1s y un periodo de 80ms
         struct periodic_signal *p = create_periodic_signal(MS_TO_US(OFFSET_FUEL_INJECTION_MS), 
-                                                        PERIOD_FUEL_INJECTION_US, siginfo);
+                                                        MS_TO_US(PERIOD_FUEL_INJECTION_MS), siginfo);
         //Para saber el periodo de ejecución del job
         double start, stop;
         struct timespec time; 
@@ -99,7 +103,7 @@ void *fuel_injection(void *args)
                 return NULL; 
         }
 
-        PRINT_DATA_ARGS(stdout, "******* En %.2f s inicia %s *******\n", 
+        PRINT_DATA_ARGS(stdout, "******* En %d s inicia %s *******\n", 
                          MS_TO_S(OFFSET_FUEL_INJECTION_MS),  (char *)args);
 
         clock_gettime(CLOCK_REALTIME, &time); //Inicia la medición del tiempo
@@ -122,7 +126,7 @@ void *fuel_injection(void *args)
  */
 void *abs_control(void *args)
 {
-        //Se crea la estructura
+        //Crea el periodic_task del control ABS con un offset de 5s y un periodo de 40ms
         struct periodic_task *p = create_periodic_task(MS_TO_US(OFFSET_ABS_CONTROL_MS), 
                                                         MS_TO_US(PERIOD_ABS_CONTROL_MS));
         //Medir el periodo entre ejecuciones del job
@@ -134,7 +138,7 @@ void *abs_control(void *args)
                 return NULL; 
         }
         //Imprime información de manera thread safe
-        PRINT_DATA_ARGS(stdout, "******* En %.2f s inicia %s *******\n", 
+        PRINT_DATA_ARGS(stdout, "******* En %d s inicia %s *******\n", 
                         MS_TO_S(OFFSET_ABS_CONTROL_MS),  (char *)args);
         //Cuerpo principal del thread
         start = TIMESPEC_TO_MS(time); //Marca de tiempo inicial
@@ -171,7 +175,7 @@ void *speed_sensor(void *args)
         }
 
         //Mensaje de inicio, notese el uso del macro variadico
-        PRINT_DATA_ARGS(stdout, "******* En %.2f s inicia %s *******\n", 
+        PRINT_DATA_ARGS(stdout, "******* En %d s inicia %s *******\n", 
                         MS_TO_S(OFFSET_SPEED_SENSOR_MS), (char *)args);
 
         clock_gettime(CLOCK_REALTIME, &time);
@@ -217,22 +221,22 @@ int init_app(void)
                 PRINT_DATA(stderr, "[init_app]: no pudo crearse el hilo Speed Sensor\n");
                 return 1;
         }
-
+        
         if (pthread_create(&threads[1], NULL, abs_control, "ABS Control") != 0) {
                 PRINT_DATA(stderr, "[init_app]: no pudo crearse el hilo ABS Control\n");
                 return 1;
         }
-
+        
         if (pthread_create(&threads[2], NULL, fuel_injection, "Fuel Injection") != 0) {
                 PRINT_DATA(stderr, "[init_app]: no pudo crearse el hilo Fuel Injection\n");
                 return 1;
         }
-
+        
         if (pthread_create(&threads[3], NULL, position_sensor, "Position sensor") != 0) {
                 PRINT_DATA(stderr, "[init_app]: no pudo crearse el hilo Position Sensor\n");
                 return 1;
         }
-
+        
         //Se obliga a que los hilos se esperen entre si
         for (uint8_t i=0; i < MAX_THREADS; i++) {
                 pthread_join(threads[i], NULL);

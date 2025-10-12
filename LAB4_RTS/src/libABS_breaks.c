@@ -6,8 +6,9 @@
 
 /**
  * @brief funcion que simula a un controlador de frenos ABS
- * verifica si alguna de las ruedas está en riesgo de bloquearse.
- * En caso de estarlo libera un poco el freno
+ * verifica si alguna de las ruedas está en riesgo de bloquearse. En caso de estarlo libera un poco el freno.
+ * El control ABS debe tener acceso a la estructura data, asi que usar Mutex y variables condicionales para 
+ * leer los datos cuando estos sean validos
  */
 void control_abs_breaks(void)
 {

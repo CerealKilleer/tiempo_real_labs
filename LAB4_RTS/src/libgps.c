@@ -22,7 +22,7 @@ static void calculate_new_position(struct position *pos, float avg_vel, float dt
         double d = KM_H_TO_M_S(avg_vel) * dt; //Desplazamiento simulado
         double rad = DEGRESS_TO_RADS(pos->heading_deg);
         double lat = (d * cos(rad)) / METERS_PER_LATITUD_DEGREE; //Se extrae la componente de latitud (norte) y se convierte metros
-        double lon = (d * sin(rad)) / METERS_PER_LONGITUDE_DEGREE(pos->lat); //Cuanto se mueve hacia el este a partir de la latitud
+        double lon = (d * sin(rad)) / METERS_PER_LONGITUDE_DEGREE(pos->lat); //Cuanto se mueve hacia el este respecto de la latitud
         /*Note que el desplazamiento en longitud siempre es cero 
         porque nos estamos moviendo la norte, no al noreste o al noroeste, por ejemplo.*/
 
