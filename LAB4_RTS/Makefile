@@ -1,4 +1,5 @@
-CC = gcc
+CROSS_COMPILE =
+CC = ${CROSS_COMPILE}gcc
 AR = ar
 CFLAGS = -O1 -Wall -Werror -Wpedantic -I${INCLUDE_DIR}
 LDFLAGS = -lpthread -lrt -lm -L${BUILD_DIR} -lcar_control
