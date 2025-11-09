@@ -124,5 +124,59 @@
    <completion_time>0</completion_time>
   </periodic_task>
  </tasks>
+ <resources>
+  <pip_resource id="id_61">
+   <object_type>RESOURCE_OBJECT_TYPE</object_type>
+   <name>R1</name>
+   <state>1</state>
+   <size>0</size>
+   <address>0</address>
+   <protocol>PRIORITY_INHERITANCE_PROTOCOL</protocol>
+   <critical_sections>
+    <task_name>T1</task_name>
+    <critical_section>
+     <task_synchronization>MUTEX</task_synchronization>
+     <task_begin>2</task_begin>
+     <task_end>8</task_end>
+    </critical_section>
+    <task_name>T2</task_name>
+    <critical_section>
+     <task_synchronization>MUTEX</task_synchronization>
+     <task_begin>6</task_begin>
+     <task_end>8</task_end>
+    </critical_section>
+   </critical_sections>
+   <cpu_name>cpu1</cpu_name>
+   <address_space_name>ea1</address_space_name>
+   <priority>0</priority>
+   <priority_assignment>AUTOMATIC_ASSIGNMENT</priority_assignment>
+  </pip_resource>
+  <pip_resource id="id_62">
+   <object_type>RESOURCE_OBJECT_TYPE</object_type>
+   <name>R2</name>
+   <state>1</state>
+   <size>0</size>
+   <address>0</address>
+   <protocol>PRIORITY_INHERITANCE_PROTOCOL</protocol>
+   <critical_sections>
+    <task_name>T1</task_name>
+    <critical_section>
+     <task_synchronization>MUTEX</task_synchronization>
+     <task_begin>4</task_begin>
+     <task_end>8</task_end>
+    </critical_section>
+    <task_name>T2</task_name>
+    <critical_section>
+     <task_synchronization>MUTEX</task_synchronization>
+     <task_begin>2</task_begin>
+     <task_end>8</task_end>
+    </critical_section>
+   </critical_sections>
+   <cpu_name>cpu1</cpu_name>
+   <address_space_name>ea1</address_space_name>
+   <priority>0</priority>
+   <priority_assignment>AUTOMATIC_ASSIGNMENT</priority_assignment>
+  </pip_resource>
+ </resources>
 </cheddar>
 

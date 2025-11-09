@@ -22,9 +22,9 @@
   </core_unit>
  </core_units>
  <processors>
-  <mono_core_processor id="id_2">
+  <mono_core_processor id="id_12">
    <object_type>PROCESSOR_OBJECT_TYPE</object_type>
-   <name>p1</name>
+   <name>cpu1</name>
    <processor_type>MONOCORE_TYPE</processor_type>
    <migration_type>NO_MIGRATION_TYPE</migration_type>
    <core ref="id_1">
@@ -32,10 +32,10 @@
   </mono_core_processor>
  </processors>
  <address_spaces>
-  <address_space id="id_3">
+  <address_space id="id_14">
    <object_type>ADDRESS_SPACE_OBJECT_TYPE</object_type>
-   <name>ea</name>
-   <cpu_name>p1</cpu_name>
+   <name>ea1</name>
+   <cpu_name>cpu1</cpu_name>
    <text_memory_size>0</text_memory_size>
    <stack_memory_size>0</stack_memory_size>
    <data_memory_size>0</data_memory_size>
@@ -51,11 +51,11 @@
      <start_time>0</start_time>
     </scheduling_parameters>
    </scheduling>
-   <mils_confidentiality_level>TOP_SECRET</mils_confidentiality_level>
-   <mils_integrity_level>HIGH</mils_integrity_level>
+   <mils_confidentiality_level>UNCLASSIFIED</mils_confidentiality_level>
+   <mils_integrity_level>LOW</mils_integrity_level>
    <mils_component>SLS</mils_component>
    <mils_partition>DEVICE</mils_partition>
-   <mils_compliant>TRUE</mils_compliant>
+   <mils_compliant>FALSE</mils_compliant>
   </address_space>
  </address_spaces>
  <tasks>
@@ -63,44 +63,12 @@
    <object_type>TASK_OBJECT_TYPE</object_type>
    <name>T1</name>
    <task_type>PERIODIC_TYPE</task_type>
-   <cpu_name>p1</cpu_name>
-   <address_space_name>ea</address_space_name>
-   <capacity>2</capacity>
-   <capacity_low>0</capacity_low>
-   <energy_consumption>0</energy_consumption>
-   <deadline>6</deadline>
-   <start_time>0</start_time>
-   <priority>100</priority>
-   <blocking_time>0</blocking_time>
-   <policy>SCHED_FIFO</policy>
-   <text_memory_size>0</text_memory_size>
-   <text_memory_start_address>0</text_memory_start_address>
-   <stack_memory_size>0</stack_memory_size>
-   <criticality>0</criticality>
-   <context_switch_overhead>0</context_switch_overhead>
-   <cfg_relocatable>FALSE</cfg_relocatable>
-   <mils_confidentiality_level>TOP_SECRET</mils_confidentiality_level>
-   <mils_integrity_level>HIGH</mils_integrity_level>
-   <mils_component>SLS</mils_component>
-   <mils_task>APPLICATION</mils_task>
-   <mils_compliant>TRUE</mils_compliant>
-   <access_memory_number>0</access_memory_number>
-   <maximum_number_of_memory_request_per_job>0</maximum_number_of_memory_request_per_job>
-   <period>6</period>
-   <jitter>0</jitter>
-   <every>0</every>
-   <completion_time>0</completion_time>
-  </periodic_task>
-  <periodic_task id="id_5">
-   <object_type>TASK_OBJECT_TYPE</object_type>
-   <name>T2</name>
-   <task_type>PERIODIC_TYPE</task_type>
-   <cpu_name>p1</cpu_name>
-   <address_space_name>ea</address_space_name>
+   <cpu_name>cpu1</cpu_name>
+   <address_space_name>ea1</address_space_name>
    <capacity>8</capacity>
    <capacity_low>0</capacity_low>
    <energy_consumption>0</energy_consumption>
-   <deadline>24</deadline>
+   <deadline>31</deadline>
    <start_time>0</start_time>
    <priority>50</priority>
    <blocking_time>0</blocking_time>
@@ -111,30 +79,30 @@
    <criticality>0</criticality>
    <context_switch_overhead>0</context_switch_overhead>
    <cfg_relocatable>FALSE</cfg_relocatable>
-   <mils_confidentiality_level>TOP_SECRET</mils_confidentiality_level>
-   <mils_integrity_level>HIGH</mils_integrity_level>
+   <mils_confidentiality_level>UNCLASSIFIED</mils_confidentiality_level>
+   <mils_integrity_level>LOW</mils_integrity_level>
    <mils_component>SLS</mils_component>
    <mils_task>APPLICATION</mils_task>
-   <mils_compliant>TRUE</mils_compliant>
+   <mils_compliant>FALSE</mils_compliant>
    <access_memory_number>0</access_memory_number>
    <maximum_number_of_memory_request_per_job>0</maximum_number_of_memory_request_per_job>
-   <period>24</period>
+   <period>31</period>
    <jitter>0</jitter>
    <every>0</every>
    <completion_time>0</completion_time>
   </periodic_task>
-  <periodic_task id="id_6">
+  <periodic_task id="id_5">
    <object_type>TASK_OBJECT_TYPE</object_type>
-   <name>T3</name>
+   <name>T2</name>
    <task_type>PERIODIC_TYPE</task_type>
-   <cpu_name>p1</cpu_name>
-   <address_space_name>ea</address_space_name>
-   <capacity>4</capacity>
+   <cpu_name>cpu1</cpu_name>
+   <address_space_name>ea1</address_space_name>
+   <capacity>8</capacity>
    <capacity_low>0</capacity_low>
    <energy_consumption>0</energy_consumption>
-   <deadline>12</deadline>
-   <start_time>0</start_time>
-   <priority>40</priority>
+   <deadline>30</deadline>
+   <start_time>2</start_time>
+   <priority>100</priority>
    <blocking_time>0</blocking_time>
    <policy>SCHED_FIFO</policy>
    <text_memory_size>0</text_memory_size>
@@ -143,18 +111,72 @@
    <criticality>0</criticality>
    <context_switch_overhead>0</context_switch_overhead>
    <cfg_relocatable>FALSE</cfg_relocatable>
-   <mils_confidentiality_level>TOP_SECRET</mils_confidentiality_level>
-   <mils_integrity_level>HIGH</mils_integrity_level>
+   <mils_confidentiality_level>UNCLASSIFIED</mils_confidentiality_level>
+   <mils_integrity_level>LOW</mils_integrity_level>
    <mils_component>SLS</mils_component>
    <mils_task>APPLICATION</mils_task>
-   <mils_compliant>TRUE</mils_compliant>
+   <mils_compliant>FALSE</mils_compliant>
    <access_memory_number>0</access_memory_number>
    <maximum_number_of_memory_request_per_job>0</maximum_number_of_memory_request_per_job>
-   <period>12</period>
+   <period>30</period>
    <jitter>0</jitter>
    <every>0</every>
    <completion_time>0</completion_time>
   </periodic_task>
  </tasks>
+ <resources>
+  <pcp_resource id="id_61">
+   <object_type>RESOURCE_OBJECT_TYPE</object_type>
+   <name>R1</name>
+   <state>1</state>
+   <size>0</size>
+   <address>0</address>
+   <protocol>PRIORITY_CEILING_PROTOCOL</protocol>
+   <critical_sections>
+    <task_name>T1</task_name>
+    <critical_section>
+     <task_synchronization>MUTEX</task_synchronization>
+     <task_begin>2</task_begin>
+     <task_end>8</task_end>
+    </critical_section>
+    <task_name>T2</task_name>
+    <critical_section>
+     <task_synchronization>MUTEX</task_synchronization>
+     <task_begin>6</task_begin>
+     <task_end>8</task_end>
+    </critical_section>
+   </critical_sections>
+   <cpu_name>cpu1</cpu_name>
+   <address_space_name>ea1</address_space_name>
+   <priority>0</priority>
+   <priority_assignment>AUTOMATIC_ASSIGNMENT</priority_assignment>
+  </pcp_resource>
+  <pcp_resource id="id_62">
+   <object_type>RESOURCE_OBJECT_TYPE</object_type>
+   <name>R2</name>
+   <state>1</state>
+   <size>0</size>
+   <address>0</address>
+   <protocol>PRIORITY_CEILING_PROTOCOL</protocol>
+   <critical_sections>
+    <task_name>T1</task_name>
+    <critical_section>
+     <task_synchronization>MUTEX</task_synchronization>
+     <task_begin>4</task_begin>
+     <task_end>8</task_end>
+    </critical_section>
+    <task_name>T2</task_name>
+    <critical_section>
+     <task_synchronization>MUTEX</task_synchronization>
+     <task_begin>2</task_begin>
+     <task_end>8</task_end>
+    </critical_section>
+   </critical_sections>
+   <cpu_name>cpu1</cpu_name>
+   <address_space_name>ea1</address_space_name>
+   <priority>0</priority>
+   <priority_assignment>AUTOMATIC_ASSIGNMENT</priority_assignment>
+  </pcp_resource>
+ </resources>
 </cheddar>
 

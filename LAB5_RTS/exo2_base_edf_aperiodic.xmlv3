@@ -97,10 +97,10 @@
    <task_type>PERIODIC_TYPE</task_type>
    <cpu_name>cpu1</cpu_name>
    <address_space_name>ea1</address_space_name>
-   <capacity>5</capacity>
+   <capacity>8</capacity>
    <capacity_low>0</capacity_low>
    <energy_consumption>0</energy_consumption>
-   <deadline>10</deadline>
+   <deadline>16</deadline>
    <start_time>0</start_time>
    <priority>1</priority>
    <blocking_time>0</blocking_time>
@@ -118,11 +118,39 @@
    <mils_compliant>TRUE</mils_compliant>
    <access_memory_number>0</access_memory_number>
    <maximum_number_of_memory_request_per_job>0</maximum_number_of_memory_request_per_job>
-   <period>10</period>
+   <period>16</period>
    <jitter>0</jitter>
    <every>0</every>
    <completion_time>0</completion_time>
   </periodic_task>
+  <aperiodic_task id="id_50">
+   <object_type>TASK_OBJECT_TYPE</object_type>
+   <name>T3</name>
+   <task_type>APERIODIC_TYPE</task_type>
+   <cpu_name>cpu1</cpu_name>
+   <address_space_name>ea1</address_space_name>
+   <capacity>4</capacity>
+   <capacity_low>0</capacity_low>
+   <energy_consumption>0</energy_consumption>
+   <deadline>15</deadline>
+   <start_time>0</start_time>
+   <priority>1</priority>
+   <blocking_time>0</blocking_time>
+   <policy>SCHED_FIFO</policy>
+   <text_memory_size>0</text_memory_size>
+   <text_memory_start_address>0</text_memory_start_address>
+   <stack_memory_size>0</stack_memory_size>
+   <criticality>0</criticality>
+   <context_switch_overhead>0</context_switch_overhead>
+   <cfg_relocatable>FALSE</cfg_relocatable>
+   <mils_confidentiality_level>TOP_SECRET</mils_confidentiality_level>
+   <mils_integrity_level>HIGH</mils_integrity_level>
+   <mils_component>SLS</mils_component>
+   <mils_task>APPLICATION</mils_task>
+   <mils_compliant>TRUE</mils_compliant>
+   <access_memory_number>0</access_memory_number>
+   <maximum_number_of_memory_request_per_job>0</maximum_number_of_memory_request_per_job>
+  </aperiodic_task>
  </tasks>
 </cheddar>
 
