@@ -42,9 +42,8 @@ static void *rtc_periodic_thread(void *arg) {
         exit(EXIT_FAILURE);
     }    
 
-    //Esto es interesante, el DS3231 puede generar señales de reloj de 32.768kHz (2^15), 8.192 kHz (2^13), 4.096(2^12), 1.024kHz (2^10) y 1Hz (1^0)
-    //Pero en principio no podría generar un reloj de 64Hz (2^6), a menos que el controlador del kernel implemente un divisor de frecuencia y seguro lo hace.
-    //Esta línea configura la frecuencia (freq) de generación de interrupciones.
+    //Esta línea configura la frecuencia (freq) de generación de interrupciones. Sin embargo, el DS3231 nunca conecta sus pines SQW y 32K a la raspberry.
+    //Con lo cual, estas interrupciones son generadas por software (el kernel)
     if (ioctl(fd, RTC_IRQP_SET, freq) < 0) {
         perror("Error al configurar frecuencia del RTC");
         exit(EXIT_FAILURE);
@@ -143,7 +142,7 @@ int main(void) {
 
     //Se crea el primer hilo que controla los ticks del RTC y se valida correctamente.
     pthread_t rtc_thread;
-    if (pthread_create(&rtc_thread, NULL, rtc_periodic_thread, &freq) != 0) {
+    if (pthread_create(&\, NULL, rtc_periodic_thread, &freq) != 0) {
         perror("Error al crear hilo RTC");
         exit(EXIT_FAILURE);
     }
