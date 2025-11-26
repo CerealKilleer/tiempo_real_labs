@@ -23,6 +23,7 @@ typedef struct {
 static volatile unsigned long tick_count = 0;
 //Se inicializan las variables, estos macros permiten inicializar el mutex y la variable condicional de manera estatica sin el llamado a las funciones correspondientes.
 static pthread_mutex_t tick_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t printf_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t tick_cond = PTHREAD_COND_INITIALIZER;
 static int running = 1;
 
@@ -105,15 +106,17 @@ static void *periodic_task(void *arg) {
             //La tarea se duerme hasta el próximo tick y continuará así hasta que sea hora de ejecutarse.
             pthread_cond_wait(&tick_cond, &tick_mutex);
 
-        //Cuando al final es hora de despertarse se debe actualizar el próximo release de la tarea
+        //Cutick_countando al final es hora de despertarse se debe actualizar el próximo release de la tarea
         next_release += info->period_ticks;
 
         //Liberarse el mutex, este mutex podría haberse liberado una línea antes porque next_release e info->period_ticks son locales al hilo.
         pthread_mutex_unlock(&tick_mutex);
 
-        //El cuerpo de la tarea es mostrar este printf
+        //El cuerpo de la tarea es mostrar este printf. Todos los hilos usan este recurso. Esto debería estar cubierto por un mutex, nosotros creamos uno (printf_mutex)
+        pthread_mutex_lock(&printf_mutex);
         printf("[tick %lu] Ejecutando %s (periodo: %u ticks)\n",
                tick_count, info->name, info->period_ticks);
+        pthread_mutex_unlock(&printf_mutex);
         //Y se hace esta espera durante 50ms para simular un tiempo de ejecución adicional de este valor. Todas las tareas tienen un deadline de menos de 50ms.
         usleep(50000);
     }
@@ -142,7 +145,7 @@ int main(void) {
 
     //Se crea el primer hilo que controla los ticks del RTC y se valida correctamente.
     pthread_t rtc_thread;
-    if (pthread_create(&\, NULL, rtc_periodic_thread, &freq) != 0) {
+    if (pthread_create(&, NULL, rtc_periodic_thread, &freq) != 0) {
         perror("Error al crear hilo RTC");
         exit(EXIT_FAILURE);
     }
