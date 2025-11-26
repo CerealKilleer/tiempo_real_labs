@@ -13,7 +13,7 @@ int main() {
      * negativo, aquí se trata de abrir el archivo que representa el rtc y se valida si se pudo abrir correctamente */
     int fd = open(dev, O_RDONLY);
     if (fd < 0) {
-        perror("Error abriendo el RTC");
+        perror("Error abriendo el RTC");    //<! perror es útil porque no solo muestra el error sino también la variable errno y su significado
         return 1;                           //<! Si algo falla se retorna al SO un valor de error. Cualquier número distinto a 0 que se retorne desde el main, es un error para el sistema operativo.
     }
 
