@@ -145,7 +145,7 @@ int main(void) {
 
     //Se crea el primer hilo que controla los ticks del RTC y se valida correctamente.
     pthread_t rtc_thread;
-    if (pthread_create(&, NULL, rtc_periodic_thread, &freq) != 0) {
+    if (pthread_create(&rtc_thread, NULL, rtc_periodic_thread, &freq) != 0) {
         perror("Error al crear hilo RTC");
         exit(EXIT_FAILURE);
     }
