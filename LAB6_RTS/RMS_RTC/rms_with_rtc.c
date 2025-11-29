@@ -106,7 +106,7 @@ static void *periodic_task(void *arg) {
             //La tarea se duerme hasta el próximo tick y continuará así hasta que sea hora de ejecutarse.
             pthread_cond_wait(&tick_cond, &tick_mutex);
 
-        //Cutick_countando al final es hora de despertarse se debe actualizar el próximo release de la tarea
+        //Hay que actualizar el tiempo para la siguiente ejecución
         next_release += info->period_ticks;
 
         //Liberarse el mutex, este mutex podría haberse liberado una línea antes porque next_release e info->period_ticks son locales al hilo.

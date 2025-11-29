@@ -32,10 +32,10 @@ int main() {
     //Aquí se formatea la salida así: yyyy-mm-yy hh:mm:ss con un salto de linea al final pa que quede más bonito
     printf("(%s) Hora RTC DS3231: %04d-%02d-%02d %02d:%02d:%02d\n",
            dev,
-           rtc.tm_year + 1900, //Tengo dudas sobre esto porque el registro de año en el ds3231 va de 00-99, realmente debería ser 2000
-           rtc.tm_mon  + 1, //Igual aquí, el registro del mes va de 1-12
-           rtc.tm_mday,
-           rtc.tm_hour, rtc.tm_min, rtc.tm_sec);
+           rtc.tm_year + 1900, //Los años se miden como referencia desde 1900, esto es debido a la implementación del controlador del kernel. El DS3231 maneja este campo como un número entre 00 y 99
+           rtc.tm_mon  + 1, //Igual aquí, el DS3231 maneja los meses del 1 al 12, pero la impelementación del controlador en el kernel lo hace de 0 a 11
+           rtc.tm_mday, //Dia del mes
+           rtc.tm_hour, rtc.tm_min, rtc.tm_sec); //Info de hora, minuto y segundo
 
     close(fd);
     return 0; //Todo salió bien :)
